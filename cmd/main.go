@@ -53,6 +53,12 @@ func main() {
 	}
 
 	mediaEngine := webrtc.MediaEngine{}
+
+	api := webrtc.NewAPI(webrtc.WithMediaEngine(&mediaEngine))
+	peerConnection, err = api.NewPeerConnection(config)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
