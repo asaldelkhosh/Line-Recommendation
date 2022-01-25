@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/gorilla/websocket"
+	"io"
 	"log"
 	"net/url"
 )
@@ -30,4 +32,18 @@ func main() {
 			log.Fatal("close fatal:", err)
 		}
 	}(c)
+}
+
+func readMessage(connection *websocket.Conn, done chan struct{}) {
+	defer close(done)
+
+	for {
+		_, message, err := connection.ReadMessage()
+		if err != nil || err == io.EOF {
+			log.Fatal("Error reading: ", err)
+			return
+		}
+
+		fmt.Printf("recv: %s", message)
+	}
 }
