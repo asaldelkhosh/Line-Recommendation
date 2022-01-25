@@ -32,6 +32,12 @@ func main() {
 			log.Fatal("close fatal:", err)
 		}
 	}(c)
+
+	done := make(chan struct{})
+
+	go readMessage(c, done)
+
+	<-done
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
