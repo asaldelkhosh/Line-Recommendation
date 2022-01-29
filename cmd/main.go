@@ -19,8 +19,10 @@ import (
 )
 
 var (
-	addr           string
-	peerConnection *webrtc.PeerConnection
+	addr              string
+	peerConnection    *webrtc.PeerConnection
+	connectionID      uint64
+	remoteDescription *webrtc.SessionDescription
 )
 
 type SendOffer struct {
@@ -158,7 +160,7 @@ func main() {
 	params := (*json.RawMessage)(&offerJson)
 
 	connectionUUID := uuid.New()
-	connectionID := uint64(connectionUUID.ID())
+	connectionID = uint64(connectionUUID.ID())
 
 	offerMessage := &jsonrpc2.Request{
 		Method: "join",
@@ -219,5 +221,16 @@ func readMessage(connection *websocket.Conn, done chan struct{}) {
 		}
 
 		fmt.Printf("recv: %s", message)
+
+		var response Response
+		_ = json.Unmarshal(message, &response)
+
+		if response.Id == connectionID {
+			result := *response.Result
+			remoteDescription = response.Result
+			if err := peerConnection.SetRemoteDescription(result); err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
 }
