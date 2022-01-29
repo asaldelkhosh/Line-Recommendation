@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pion/mediadevices"
 	"github.com/pion/mediadevices/pkg/codec/vpx"
@@ -118,6 +120,18 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	offerJson, err := json.Marshal(&SendOffer{
+		Offer: peerConnection.LocalDescription(),
+		SID:   "test room",
+	})
+
+	params := (*json.RawMessage)(&offerJson)
+
+	connectionUUID := uuid.New()
+	connectionID := uint64(connectionUUID.ID())
+
+	offerMessage := &jsonrpc
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
