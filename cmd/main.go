@@ -19,6 +19,11 @@ var (
 	peerConnection *webrtc.PeerConnection
 )
 
+type SendOffer struct {
+	SID   string                     `json:"sid"`
+	Offer *webrtc.SessionDescription `json:"offer"`
+}
+
 func main() {
 	flag.StringVar(&addr, "a", "localhost:7000", "address to use")
 	flag.Parse()
