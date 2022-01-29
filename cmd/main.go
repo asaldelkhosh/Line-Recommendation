@@ -104,6 +104,15 @@ func main() {
 			panic(err)
 		}
 	}
+
+	// WebRTC offer
+	offer, err := peerConnection.CreateOffer(nil)
+
+	// Remote Session description
+	err = peerConnection.SetLocalDescription(offer)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
