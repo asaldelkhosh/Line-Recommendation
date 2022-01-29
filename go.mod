@@ -3,6 +3,7 @@ module cmd
 go 1.17
 
 require (
+	github.com/gen2brain/malgo v0.10.35 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/pion/datachannel v1.5.2 // indirect
