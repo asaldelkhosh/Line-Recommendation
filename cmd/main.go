@@ -266,6 +266,18 @@ func readMessage(connection *websocket.Conn, done chan struct{}) {
 
 			messageBytes := reqBodyBytes.Bytes()
 			connection.WriteMessage(websocket.TextMessage, messageBytes)
+		} else if response.Method == "trickle" {
+			var trickleResponse TrickleResponse
+
+			if err := json.Unmarshal(message, &trickleResponse); err != nil {
+				log.Fatal(err)
+			}
+
+			err := peerConnection.AddICECandidate(*trickleResponse.Params.Candidate)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }
