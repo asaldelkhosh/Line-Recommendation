@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"github.com/pion/mediadevices/pkg/frame"
 	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
+	"github.com/sourcegraph/jsonrpc2"
 	"io"
 	"log"
 	"net/url"
@@ -131,7 +133,21 @@ func main() {
 	connectionUUID := uuid.New()
 	connectionID := uint64(connectionUUID.ID())
 
-	offerMessage := &jsonrpc
+	offerMessage := &jsonrpc2.Request{
+		Method: "join",
+		Params: params,
+		ID: jsonrpc2.ID{
+			IsString: false,
+			Str:      "",
+			Num:      connectionID,
+		},
+	}
+
+	reqBodyBytes := new(bytes.Buffer)
+	_ = json.NewEncoder(reqBodyBytes).Encode(offerMessage)
+
+	messageBytes := reqBodyBytes.Bytes()
+	_ = c.WriteMessage(websocket.TextMessage, messageBytes)
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
