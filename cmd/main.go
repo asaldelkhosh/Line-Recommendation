@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pion/mediadevices"
-	// "github.com/pion/mediadevices/pkg/codec/vpx"
+	"github.com/pion/mediadevices/pkg/codec/vpx"
 	"github.com/pion/mediadevices/pkg/frame"
 	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
@@ -93,8 +93,10 @@ func main() {
 
 	mediaEngine := webrtc.MediaEngine{}
 
+	vpxP, _ := vpx.NewVP9Params()
+	vpxP.BitRate = 500_000
 	codecSelector := mediadevices.NewCodecSelector(
-		mediadevices.WithVideoEncoders(),
+		mediadevices.WithVideoEncoders(&vpxP),
 	)
 	codecSelector.Populate(&mediaEngine)
 	api := webrtc.NewAPI(webrtc.WithMediaEngine(&mediaEngine))
