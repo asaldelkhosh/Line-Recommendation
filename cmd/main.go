@@ -28,6 +28,11 @@ type SendOffer struct {
 	Offer *webrtc.SessionDescription `json:"offer"`
 }
 
+type Candidate struct {
+	Target    int                  `json:"target"`
+	Candidate *webrtc.ICECandidate `json:"candidate"`
+}
+
 func main() {
 	flag.StringVar(&addr, "a", "localhost:7000", "address to use")
 	flag.Parse()
@@ -148,6 +153,37 @@ func main() {
 
 	messageBytes := reqBodyBytes.Bytes()
 	_ = c.WriteMessage(websocket.TextMessage, messageBytes)
+
+	// Handling OnICECandidate event
+	peerConnection.OnICECandidate(func(candidate *webrtc.ICECandidate) {
+		if candidate != nil {
+			candidateJSON, err := json.Marshal(&Candidate{
+				Candidate: candidate,
+				Target:    0,
+			})
+
+			params := (*json.RawMessage)(&candidateJSON)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			message := &jsonrpc2.Request{
+				Method: "trickle",
+				Params: params,
+			}
+
+			reqBodyBytes := new(bytes.Buffer)
+			_ = json.NewEncoder(reqBodyBytes).Encode(message)
+
+			messageBytes := reqBodyBytes.Bytes()
+			_ = c.WriteMessage(websocket.TextMessage, messageBytes)
+		}
+	})
+
+	peerConnection.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
+		fmt.Printf("Connection State has changed to %s \n", state.String())
+	})
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
