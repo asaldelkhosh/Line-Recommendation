@@ -82,8 +82,6 @@ func main() {
 		}
 	}(c)
 
-	done := make(chan struct{})
-
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{
@@ -95,12 +93,6 @@ func main() {
 
 	mediaEngine := webrtc.MediaEngine{}
 
-	//vpxParams, err := vpx.NewVP8Params()
-	//if err != nil {
-	//	panic(err)
-	//}
-	//vpxParams.BitRate = 500_000 // 500kbps
-	//
 	codecSelector := mediadevices.NewCodecSelector(
 		mediadevices.WithVideoEncoders(),
 	)
@@ -110,6 +102,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	done := make(chan struct{})
 
 	go readMessage(c, done)
 
@@ -152,32 +146,6 @@ func main() {
 		panic(err)
 	}
 
-	offerJson, err := json.Marshal(&SendOffer{
-		Offer: peerConnection.LocalDescription(),
-		SID:   "test room",
-	})
-
-	params := (*json.RawMessage)(&offerJson)
-
-	connectionUUID := uuid.New()
-	connectionID = uint64(connectionUUID.ID())
-
-	offerMessage := &jsonrpc2.Request{
-		Method: "join",
-		Params: params,
-		ID: jsonrpc2.ID{
-			IsString: false,
-			Str:      "",
-			Num:      connectionID,
-		},
-	}
-
-	reqBodyBytes := new(bytes.Buffer)
-	_ = json.NewEncoder(reqBodyBytes).Encode(offerMessage)
-
-	messageBytes := reqBodyBytes.Bytes()
-	_ = c.WriteMessage(websocket.TextMessage, messageBytes)
-
 	// Handling OnICECandidate event
 	peerConnection.OnICECandidate(func(candidate *webrtc.ICECandidate) {
 		if candidate != nil {
@@ -208,6 +176,32 @@ func main() {
 	peerConnection.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
 		fmt.Printf("Connection State has changed to %s \n", state.String())
 	})
+
+	offerJson, err := json.Marshal(&SendOffer{
+		Offer: peerConnection.LocalDescription(),
+		SID:   "test room",
+	})
+
+	params := (*json.RawMessage)(&offerJson)
+
+	connectionUUID := uuid.New()
+	connectionID = uint64(connectionUUID.ID())
+
+	offerMessage := &jsonrpc2.Request{
+		Method: "join",
+		Params: params,
+		ID: jsonrpc2.ID{
+			IsString: false,
+			Str:      "",
+			Num:      connectionID,
+		},
+	}
+
+	reqBodyBytes := new(bytes.Buffer)
+	_ = json.NewEncoder(reqBodyBytes).Encode(offerMessage)
+
+	messageBytes := reqBodyBytes.Bytes()
+	_ = c.WriteMessage(websocket.TextMessage, messageBytes)
 
 	<-done
 }
