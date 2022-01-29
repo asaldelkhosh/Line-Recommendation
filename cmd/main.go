@@ -16,6 +16,9 @@ import (
 	"io"
 	"log"
 	"net/url"
+
+	_ "github.com/pion/mediadevices/pkg/driver/camera"
+	_ "github.com/pion/mediadevices/pkg/driver/microphone"
 )
 
 var (
