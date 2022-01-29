@@ -6,6 +6,8 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/pion/mediadevices"
 	"github.com/pion/mediadevices/pkg/codec/vpx"
+	"github.com/pion/mediadevices/pkg/frame"
+	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
 	"io"
 	"log"
@@ -71,6 +73,36 @@ func main() {
 	peerConnection, err = api.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
+	}
+
+	fmt.Println(mediadevices.EnumerateDevices())
+
+	s, err := mediadevices.GetUserMedia(mediadevices.MediaStreamConstraints{
+		Video: func(constraints *mediadevices.MediaTrackConstraints) {
+			constraints.FrameFormat = prop.FrameFormat(frame.FormatYUY2)
+			constraints.Width = prop.Int(640)
+			constraints.Height = prop.Int(480)
+		},
+		Codec: codecSelector,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, track := range s.GetTracks() {
+		track.OnEnded(func(err error) {
+			fmt.Printf("Track (ID: %s) ended with error: %v\n", track.ID(), err)
+		})
+		_, err = peerConnection.AddTransceiverFromTrack(track,
+			webrtc.RTPTransceiverInit{
+				Direction: webrtc.RTPTransceiverDirectionSendonly,
+			},
+		)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
