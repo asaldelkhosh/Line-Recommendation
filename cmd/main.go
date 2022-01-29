@@ -231,6 +231,41 @@ func readMessage(connection *websocket.Conn, done chan struct{}) {
 			if err := peerConnection.SetRemoteDescription(result); err != nil {
 				log.Fatal(err)
 			}
+		} else if response.Id != 0 && response.Method == "offer" {
+			_ = peerConnection.SetRemoteDescription(*response.Params)
+			answer, err := peerConnection.CreateAnswer(nil)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			_ = peerConnection.SetLocalDescription(answer)
+
+			connectionUUID := uuid.New()
+			connectionID = uint64(connectionUUID.ID())
+
+			offerJSON, err := json.Marshal(&SendAnswer{
+				Answer: peerConnection.LocalDescription(),
+				SID:    "test room",
+			})
+
+			params := (*json.RawMessage)(&offerJSON)
+
+			answerMessage := jsonrpc2.Request{
+				Method: "answer",
+				Params: params,
+				ID: jsonrpc2.ID{
+					IsString: false,
+					Str:      "",
+					Num:      connectionID,
+				},
+			}
+
+			reqBodyBytes := new(bytes.Buffer)
+			_ = json.NewEncoder(reqBodyBytes).Encode(answerMessage)
+
+			messageBytes := reqBodyBytes.Bytes()
+			connection.WriteMessage(websocket.TextMessage, messageBytes)
 		}
 	}
 }
