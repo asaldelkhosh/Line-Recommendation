@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/pion/mediadevices"
+	"github.com/pion/mediadevices/pkg/codec/vpx"
 	"github.com/pion/webrtc/v3"
 	"io"
 	"log"
@@ -54,6 +56,17 @@ func main() {
 
 	mediaEngine := webrtc.MediaEngine{}
 
+	vpxParams, err := vpx.NewVP8Params()
+	if err != nil {
+		panic(err)
+	}
+	vpxParams.BitRate = 500_000 // 500kbps
+
+	codecSelector := mediadevices.NewCodecSelector(
+		mediadevices.WithVideoEncoders(&vpxParams),
+	)
+
+	codecSelector.Populate(&mediaEngine)
 	api := webrtc.NewAPI(webrtc.WithMediaEngine(&mediaEngine))
 	peerConnection, err = api.NewPeerConnection(config)
 	if err != nil {
