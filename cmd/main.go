@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pion/mediadevices"
-	"github.com/pion/mediadevices/pkg/codec/vpx"
+	// "github.com/pion/mediadevices/pkg/codec/vpx"
 	"github.com/pion/mediadevices/pkg/frame"
 	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
@@ -84,10 +84,6 @@ func main() {
 
 	done := make(chan struct{})
 
-	go readMessage(c, done)
-
-	<-done
-
 	config := webrtc.Configuration{
 		ICEServers: []webrtc.ICEServer{
 			{
@@ -99,22 +95,23 @@ func main() {
 
 	mediaEngine := webrtc.MediaEngine{}
 
-	vpxParams, err := vpx.NewVP8Params()
-	if err != nil {
-		panic(err)
-	}
-	vpxParams.BitRate = 500_000 // 500kbps
-
+	//vpxParams, err := vpx.NewVP8Params()
+	//if err != nil {
+	//	panic(err)
+	//}
+	//vpxParams.BitRate = 500_000 // 500kbps
+	//
 	codecSelector := mediadevices.NewCodecSelector(
-		mediadevices.WithVideoEncoders(&vpxParams),
+		mediadevices.WithVideoEncoders(),
 	)
-
 	codecSelector.Populate(&mediaEngine)
 	api := webrtc.NewAPI(webrtc.WithMediaEngine(&mediaEngine))
 	peerConnection, err = api.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
 	}
+
+	go readMessage(c, done)
 
 	fmt.Println(mediadevices.EnumerateDevices())
 
@@ -211,6 +208,8 @@ func main() {
 	peerConnection.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
 		fmt.Printf("Connection State has changed to %s \n", state.String())
 	})
+
+	<-done
 }
 
 func readMessage(connection *websocket.Conn, done chan struct{}) {
