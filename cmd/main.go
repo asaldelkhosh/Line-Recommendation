@@ -93,7 +93,7 @@ func main() {
 
 	mediaEngine := webrtc.MediaEngine{}
 
-	vpxP, _ := vpx.NewVP9Params()
+	vpxP, _ := vpx.NewVP8Params()
 	vpxP.BitRate = 500_000
 	codecSelector := mediadevices.NewCodecSelector(
 		mediadevices.WithVideoEncoders(&vpxP),
