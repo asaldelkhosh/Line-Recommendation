@@ -1,7 +1,7 @@
 # Broadcaster
-Building a WebRTC video and audio Broadcaster in Golang using ION-SFU, and media devices
 
 ### What is this project?
+Building a WebRTC video and audio Broadcaster in Golang using ION-SFU, and media devices.
 
 ### What is WebRTC ?
 WebRTC or **Web Real-Time Communication** is a free open-source project providing 
@@ -151,22 +151,34 @@ Once ION-SFU server is running you should see something like this:
 
 Now we need to run our WebRTC server:
 ```shell
-
+cd ..
+make serve
 ```
 
 If you got the following response you are good to go:
 ```shell
-
+2022/02/08 02:35:02 connecting to ws://localhost:7000/ws
+[{79584686-6ab6-4e72-b4e2-bcf3cff5bb24 1 pci-0000:00:14.0-usb-0:8:1.0-video-index0;video0 camera} {7e917d25-5db4-451d-82c2-819b2b28e3cf 1 pci-0000:00:14.0-usb-0:8:1.0-video-index1;video1 camera} {082aeb80-85ee-438e-9212-cf9778555fc1 2 616c73615f6f75747075742e7063692d303030305f30305f31662e332e616e616c6f672d73746572656f2e6d6f6e69746f72 microphone} {65ec460f-5188-4895-9e87-69f908bfbfa1 2 616c73615f696e7075742e7063692d303030305f30305f31662e332e616e616c6f672d73746572656f microphone}]
+recv: {"id":2473120800,"result":{"type":"answer","sdp":"v=0\r\no=- 7188600485215558167 1644275102 IN IP4 0.0.0.0\r\ns=-\r\nt=0 0\r\na=fingerprint:sha-256 CC:7F:6A:CD:1E:DD:E3:22:4C:BA:5E:71:70:09:62:1C:2F:84:E6:69:FF:44:41:48:98:6A:AC:7B:A6:5C:15:03\r\na=group:BUNDLE 0\r\nm=video 9 UDP/TLS/RTP/SAVPF 96\r\nc=IN IP4 0.0.0.0\r\na=setup:active\r\na=mid:0\r\na=ice-ufrag:tLebVdfImSyBFMxE\r\na=ice-pwd:MTeiJhQRVWWCMVRhmfNmjhpwjbekFeFN\r\na=rtcp-mux\r\na=rtcp-rsize\r\na=rtpmap:96 VP8/90000\r\na=recvonly\r\n"},"jsonrpc":"2.0"}
+recv: {"method":"trickle","params":{"target":0,"candidate":{"candidate":"candidate:3388917061 1 udp 2130706431 192.168.1.104 5086 typ host","sdpMid":"","sdpMLineIndex":0,"usernameFragment":null}},"jsonrpc":"2.0"}
+Connection State has changed to checking 
+recv: {"method":"offer","params":{"type":"offer","sdp":"v=0\r\no=- 4704832186149651630 1644275102 IN IP4 0.0.0.0\r\ns=-\r\nt=0 0\r\na=fingerprint:sha-256 E6:7E:E2:5B:BA:CC:29:52:33:6A:F1:E8:CD:15:18:8C:D3:55:6F:3E:10:21:8C:5C:D5:D7:39:03:A1:2C:82:E1\r\na=group:BUNDLE 0\r\nm=application 9 UDP/DTLS/SCTP webrtc-datachannel\r\nc=IN IP4 0.0.0.0\r\na=setup:actpass\r\na=mid:0\r\na=sendrecv\r\na=sctp-port:5000\r\na=ice-ufrag:nbjXQnCkVUSRyCmR\r\na=ice-pwd:rHqvfuEMBvmXgtnMlYLISGcWFJQzfDyv\r\n"},"jsonrpc":"2.0"}
+recv: {"method":"trickle","params":{"target":1,"candidate":{"candidate":"candidate:3388917061 1 udp 2130706431 192.168.1.104 5093 typ host","sdpMid":"","sdpMLineIndex":0,"usernameFragment":null}},"jsonrpc":"2.0"}
+Connection State has changed to connected 
 ```
 
 Now we need to run the client:
 ```shell
-
+cd client
+node server.js
 ```
 
 You should get the following result:
 ```shell
-
+Server is running on port 3030
 ``` 
 
-Now you can check the application on localhost:3030 to see something like this:
+Now you can check the application on **localhost:3030** to see something like this:
+<p align="center">
+    <img src="demo.png" />
+</p>
