@@ -22,10 +22,9 @@ import (
 )
 
 var (
-	addr              string
-	peerConnection    *webrtc.PeerConnection
-	connectionID      uint64
-	remoteDescription *webrtc.SessionDescription
+	addr           string
+	peerConnection *webrtc.PeerConnection
+	connectionID   uint64
 )
 
 type SendOffer struct {
@@ -225,7 +224,7 @@ func readMessage(connection *websocket.Conn, done chan struct{}) {
 
 		if response.Id == connectionID {
 			result := *response.Result
-			remoteDescription = response.Result
+			_ = response.Result
 			if err := peerConnection.SetRemoteDescription(result); err != nil {
 				log.Fatal(err)
 			}
@@ -263,7 +262,7 @@ func readMessage(connection *websocket.Conn, done chan struct{}) {
 			_ = json.NewEncoder(reqBodyBytes).Encode(answerMessage)
 
 			messageBytes := reqBodyBytes.Bytes()
-			connection.WriteMessage(websocket.TextMessage, messageBytes)
+			_ = connection.WriteMessage(websocket.TextMessage, messageBytes)
 		} else if response.Method == "trickle" {
 			var trickleResponse TrickleResponse
 
