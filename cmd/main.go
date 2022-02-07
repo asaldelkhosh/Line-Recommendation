@@ -3,13 +3,13 @@ package main
 import (
 	config2 "Broadcaster/internal/config"
 	"Broadcaster/pkg/dialer"
+	"Broadcaster/pkg/engine"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pion/mediadevices"
-	"github.com/pion/mediadevices/pkg/codec/vpx"
 	_ "github.com/pion/mediadevices/pkg/driver/camera"
 	_ "github.com/pion/mediadevices/pkg/driver/microphone"
 	"github.com/pion/mediadevices/pkg/frame"
@@ -75,15 +75,9 @@ func main() {
 	// webrtc configuration
 	config := config2.GetConfigs()
 
-	mediaEngine := webrtc.MediaEngine{}
+	mediaEngine, codecSelector := engine.GetMediaEngine()
 
-	vpxP, _ := vpx.NewVP8Params()
-	vpxP.BitRate = 500_000
-	codecSelector := mediadevices.NewCodecSelector(
-		mediadevices.WithVideoEncoders(&vpxP),
-	)
-	codecSelector.Populate(&mediaEngine)
-	api := webrtc.NewAPI(webrtc.WithMediaEngine(&mediaEngine))
+	api := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
 	peerConnection, err = api.NewPeerConnection(config)
 	if err != nil {
 		panic(err)
