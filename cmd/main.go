@@ -2,6 +2,7 @@ package main
 
 import (
 	config2 "Broadcaster/internal/config"
+	"Broadcaster/internal/message"
 	"Broadcaster/pkg/dialer"
 	"Broadcaster/pkg/engine"
 	"bytes"
@@ -16,7 +17,6 @@ import (
 	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
 	"github.com/sourcegraph/jsonrpc2"
-	"io"
 	"log"
 )
 
@@ -33,28 +33,6 @@ type SendOffer struct {
 type Candidate struct {
 	Target    int                  `json:"target"`
 	Candidate *webrtc.ICECandidate `json:"candidate"`
-}
-
-type SendAnswer struct {
-	SID    string                     `json:"sid"`
-	Answer *webrtc.SessionDescription `json:"answer"`
-}
-
-type ResponseCandidate struct {
-	Target    int                      `json:"target"`
-	Candidate *webrtc.ICECandidateInit `json:"candidate"`
-}
-
-type TrickleResponse struct {
-	Params ResponseCandidate `json:"params"`
-	Method string            `json:"method"`
-}
-
-type Response struct {
-	Params *webrtc.SessionDescription `json:"params"`
-	Result *webrtc.SessionDescription `json:"result"`
-	Method string                     `json:"method"`
-	Id     uint64                     `json:"id"`
 }
 
 func main() {
@@ -86,7 +64,7 @@ func main() {
 
 	done := make(chan struct{})
 
-	go readMessage(c, done)
+	go message.ReadMessage(c, done)
 
 	fmt.Println(mediadevices.EnumerateDevices())
 
@@ -185,76 +163,4 @@ func main() {
 	_ = c.WriteMessage(websocket.TextMessage, messageBytes)
 
 	<-done
-}
-
-func readMessage(connection *websocket.Conn, done chan struct{}) {
-	defer close(done)
-
-	for {
-		_, message, err := connection.ReadMessage()
-		if err != nil || err == io.EOF {
-			log.Fatal("Error reading: ", err)
-			return
-		}
-
-		fmt.Printf("recv: %s", message)
-
-		var response Response
-		_ = json.Unmarshal(message, &response)
-
-		if response.Id == connectionID {
-			result := *response.Result
-			_ = response.Result
-			if err := peerConnection.SetRemoteDescription(result); err != nil {
-				log.Fatal(err)
-			}
-		} else if response.Id != 0 && response.Method == "offer" {
-			_ = peerConnection.SetRemoteDescription(*response.Params)
-			answer, err := peerConnection.CreateAnswer(nil)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			_ = peerConnection.SetLocalDescription(answer)
-
-			connectionUUID := uuid.New()
-			connectionID = uint64(connectionUUID.ID())
-
-			offerJSON, err := json.Marshal(&SendAnswer{
-				Answer: peerConnection.LocalDescription(),
-				SID:    "test room",
-			})
-
-			params := (*json.RawMessage)(&offerJSON)
-
-			answerMessage := jsonrpc2.Request{
-				Method: "answer",
-				Params: params,
-				ID: jsonrpc2.ID{
-					IsString: false,
-					Str:      "",
-					Num:      connectionID,
-				},
-			}
-
-			reqBodyBytes := new(bytes.Buffer)
-			_ = json.NewEncoder(reqBodyBytes).Encode(answerMessage)
-
-			messageBytes := reqBodyBytes.Bytes()
-			_ = connection.WriteMessage(websocket.TextMessage, messageBytes)
-		} else if response.Method == "trickle" {
-			var trickleResponse TrickleResponse
-
-			if err := json.Unmarshal(message, &trickleResponse); err != nil {
-				log.Fatal(err)
-			}
-
-			err := peerConnection.AddICECandidate(*trickleResponse.Params.Candidate)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-	}
 }
