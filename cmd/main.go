@@ -1,6 +1,7 @@
 package main
 
 import (
+	config2 "Broadcaster/internal/config"
 	"Broadcaster/pkg/dialer"
 	"bytes"
 	"encoding/json"
@@ -69,14 +70,7 @@ func main() {
 		}
 	}(c)
 
-	config := webrtc.Configuration{
-		ICEServers: []webrtc.ICEServer{
-			{
-				URLs: []string{"stun:stun.l.google.com:19302"},
-			},
-		},
-		SDPSemantics: webrtc.SDPSemanticsUnifiedPlanWithFallback,
-	}
+	config := config2.GetConfigs()
 
 	mediaEngine := webrtc.MediaEngine{}
 
