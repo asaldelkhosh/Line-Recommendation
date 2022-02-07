@@ -6,11 +6,6 @@ const config = {
         {
             "urls": "stun:stun.l.google.com:19302",
         },
-        /*{
-            "urls": "turn:TURN_IP:3468",
-            "username": "username",
-            "credential": "password"
-        },*/
     ]
 };
 
