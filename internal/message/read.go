@@ -12,12 +12,12 @@ import (
 	"log"
 )
 
-var (
-	peerConnection *webrtc.PeerConnection
-	connectionID   uint64
-)
+type Message struct {
+	PeerConnection *webrtc.PeerConnection
+	ConnectionID   *uint64
+}
 
-func ReadMessage(connection *websocket.Conn, done chan struct{}) {
+func (m Message) ReadMessage(connection *websocket.Conn, done chan struct{}) {
 	defer close(done)
 
 	for {
@@ -32,27 +32,27 @@ func ReadMessage(connection *websocket.Conn, done chan struct{}) {
 		var response Response
 		_ = json.Unmarshal(message, &response)
 
-		if response.Id == connectionID {
+		if response.Id == *m.ConnectionID {
 			result := *response.Result
 			_ = response.Result
-			if err := peerConnection.SetRemoteDescription(result); err != nil {
+			if err := m.PeerConnection.SetRemoteDescription(result); err != nil {
 				log.Fatal(err)
 			}
 		} else if response.Id != 0 && response.Method == "offer" {
-			_ = peerConnection.SetRemoteDescription(*response.Params)
-			answer, err := peerConnection.CreateAnswer(nil)
+			_ = m.PeerConnection.SetRemoteDescription(*response.Params)
+			answer, err := m.PeerConnection.CreateAnswer(nil)
 
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			_ = peerConnection.SetLocalDescription(answer)
+			_ = m.PeerConnection.SetLocalDescription(answer)
 
 			connectionUUID := uuid.New()
-			connectionID = uint64(connectionUUID.ID())
+			*m.ConnectionID = uint64(connectionUUID.ID())
 
 			offerJSON, err := json.Marshal(&SendAnswer{
-				Answer: peerConnection.LocalDescription(),
+				Answer: m.PeerConnection.LocalDescription(),
 				SID:    "test room",
 			})
 
@@ -64,7 +64,7 @@ func ReadMessage(connection *websocket.Conn, done chan struct{}) {
 				ID: jsonrpc2.ID{
 					IsString: false,
 					Str:      "",
-					Num:      connectionID,
+					Num:      *m.ConnectionID,
 				},
 			}
 
@@ -80,7 +80,7 @@ func ReadMessage(connection *websocket.Conn, done chan struct{}) {
 				log.Fatal(err)
 			}
 
-			err := peerConnection.AddICECandidate(*trickleResponse.Params.Candidate)
+			err := m.PeerConnection.AddICECandidate(*trickleResponse.Params.Candidate)
 
 			if err != nil {
 				log.Fatal(err)
