@@ -75,6 +75,7 @@ func main() {
 	// webrtc configuration
 	config := config2.GetConfigs()
 
+	// media engine and code selector
 	mediaEngine, codecSelector := engine.GetMediaEngine()
 
 	api := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
