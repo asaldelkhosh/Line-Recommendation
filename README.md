@@ -37,9 +37,15 @@ SFU is a video routing service which allows webrtc sessions to scale more effici
 </p>
 
 ### Why using ION-SFU ?
+This package provides a simple, flexible, high performance Go implementation of a WebRTC SFU. 
+It can be called directly or through a gPRC or json-rpc interface.
 
+ION-SFU supports real-time processing on media streamed through the sfu using ion-avp.
+
+Ion-avp is an extensible audio/video processing service designed for use with ios-sfu.
 
 ### What is media devices ?
+
 
 ### How does this project work ?
 
