@@ -92,10 +92,81 @@ and send it to our ION-SFU server.
 
 ION-SFU server on the other hand, gets the data and returns the response to all other peers, including our local machine.
 
-### Dialer package
-websocket - dialer
-
-### Engine package
-Media engine - vpx - code selector
-
 ### How to use this project ?
+First you need the following requirements:
+- go 17.1
+- uuid 1.3
+- websocket 1.4.2
+- pion/mediadevices 0.3.2
+- webritc 3.1.22
+- jsonrpc2 1.0
+
+Now you need to install the following packages in your system:
+- npm
+- pkg-config
+- libx264 or x264
+- libvpx or libvpx-dev
+- vaapi 
+- libopus or libopus-dev 
+
+If you are using **Manjaro**, just run the following command:
+```shell
+sudo pacman -S a52dec faac faad2 flac jasper lame libdca libdv libmad libmpeg2 libtheora libvorbis libxv opus wavpack x264 xvidcore
+```
+
+Now you have to do the following steps to run the project.
+
+Clone the project:
+```shell
+git clone https://github.com/amirhnajafiz/Broadcaster.git
+```
+
+Now enter the root directory:
+```shell
+cd Broadcaster
+```
+
+Clone the ION-SFU and execute it:
+```shell
+git clone https://github.com/pion/ion-sfu.git
+```
+
+Enter the root directory of INO-SFU:
+```shell
+ce ion-sfu
+```
+
+Now build and run the ION server:
+```shell
+go build ./cmd/signal/json-rpc/main.go && ./main -c config.toml
+```
+
+Once ION-SFU server is running you should see something like this:
+```shell
+[2022-02-08 02:30:40.584] [INFO] [main.go:94] => Config file loaded file=config.toml v=0
+[2022-02-08 02:30:40.588] [INFO] [main.go:151] => --- Starting SFU Node --- v=0
+[2022-02-08 02:30:40.588] [INFO] [main.go:188] => Started listening addr=http://:7000 v=0
+[2022-02-08 02:30:40.589] [INFO] [main.go:130] => Metrics Listening addr=:8100 v=0
+```
+
+Now we need to run our WebRTC server:
+```shell
+
+```
+
+If you got the following response you are good to go:
+```shell
+
+```
+
+Now we need to run the client:
+```shell
+
+```
+
+You should get the following result:
+```shell
+
+``` 
+
+Now you can check the application on localhost:3030 to see something like this:
