@@ -50,6 +50,29 @@ and microphones, as well as screen sharing. In essence, it lets you obtain acces
 hardware source of media data.
 
 ### How does this project work ?
+WebRTC serves multiple purposes; together with the Media Capture and Streams API, they provide
+powerful multimedia capabilities to the web, including support for audio and video conferencing,
+file exchange, screen sharing, identity management. Connection between peers can be made
+without requiring any special drivers or plugins.
+
+Connections between two peers are represented by the **RTCPeerConnection** interface.
+Once a connection has been established and opened using RTCPeerConnection, media streams (**MediaStream**)
+and data channels (**RTCDataChannel**) can be added to the connection.
+
+Media streams can consist of any number of tracks of media information; **tracks**, which are
+represented by objects based on the **MediaStreamTrack** interface, may contain one of a number
+of types of media data, including audio, video, and text.
+
+Most streams consist of at least one audio track and likely also a video track, and
+can be used to send and receive both live media or stored media information (such as streamed movie).
+
+First we create a WebRTC connection between our local computer and a remote peer.
+then we use bidirectional channels to transfer data between peers.
+
+Once a user runs the application, we use Media devices to get the input data from our user
+and send it to our ION-SFU server.
+
+ION-SFU server on the other hand, gets the data and returns the response to all other peers, including our local machine.
 
 ### Dialer package
 websocket - dialer
