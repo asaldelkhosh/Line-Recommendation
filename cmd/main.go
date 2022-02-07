@@ -1,28 +1,25 @@
 package main
 
 import (
+	"Broadcaster/pkg/dialer"
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pion/mediadevices"
 	"github.com/pion/mediadevices/pkg/codec/vpx"
+	_ "github.com/pion/mediadevices/pkg/driver/camera"
+	_ "github.com/pion/mediadevices/pkg/driver/microphone"
 	"github.com/pion/mediadevices/pkg/frame"
 	"github.com/pion/mediadevices/pkg/prop"
 	"github.com/pion/webrtc/v3"
 	"github.com/sourcegraph/jsonrpc2"
 	"io"
 	"log"
-	"net/url"
-
-	_ "github.com/pion/mediadevices/pkg/driver/camera"
-	_ "github.com/pion/mediadevices/pkg/driver/microphone"
 )
 
 var (
-	addr           string
 	peerConnection *webrtc.PeerConnection
 	connectionID   uint64
 )
@@ -60,20 +57,11 @@ type Response struct {
 }
 
 func main() {
-	flag.StringVar(&addr, "a", "localhost:7000", "address to use")
-	flag.Parse()
-
-	u := url.URL{
-		Scheme: "ws",
-		Host:   addr,
-		Path:   "/ws",
-	}
-	log.Printf("connecting to %s", u.String())
-
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	c, err := dialer.MakeConnection()
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
+
 	defer func(c *websocket.Conn) {
 		err := c.Close()
 		if err != nil {
