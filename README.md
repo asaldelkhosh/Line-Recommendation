@@ -49,6 +49,16 @@ The MediaDevices interface provides access to connected media input devices like
 and microphones, as well as screen sharing. In essence, it lets you obtain access to any 
 hardware source of media data.
 
+### What is ICE ?
+ICE stands for Interactive Connectivity Establishment. It is a framework used by
+WebRTC for connecting two peers, regardless of network topology.
+
+This protocol allows two peers find and establish a connection with one another even
+though they may both be using Network Address Translator to share a global IP address with
+other devices on their respective local networks.
+
+The framework algorithm looks for the lowest-latency path for connecting the two peers.
+
 ### How does this project work ?
 WebRTC serves multiple purposes; together with the Media Capture and Streams API, they provide
 powerful multimedia capabilities to the web, including support for audio and video conferencing,
@@ -77,8 +87,8 @@ ION-SFU server on the other hand, gets the data and returns the response to all 
 ### Dialer package
 websocket - dialer
 
-### Config package 
-ICE server - SDPSemantics
+### Config package
+SDPSemantics
 
 ### Engine package
 Media engine - vpx - code selector
