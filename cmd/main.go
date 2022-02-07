@@ -62,15 +62,16 @@ func main() {
 		panic(err)
 	}
 
-	done := make(chan struct{})
-
 	// create a message
 	msg := message.Message{
+		Connection:     c,
 		PeerConnection: peerConnection,
 		ConnectionID:   &connectionID,
 	}
+	done := make(chan struct{})
 
-	go msg.ReadMessage(c, done)
+	// use our message package to create a reader
+	go msg.ReadMessage(done)
 
 	fmt.Println(mediadevices.EnumerateDevices())
 

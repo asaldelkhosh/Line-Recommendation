@@ -13,15 +13,16 @@ import (
 )
 
 type Message struct {
+	Connection     *websocket.Conn
 	PeerConnection *webrtc.PeerConnection
 	ConnectionID   *uint64
 }
 
-func (m Message) ReadMessage(connection *websocket.Conn, done chan struct{}) {
+func (m Message) ReadMessage(done chan struct{}) {
 	defer close(done)
 
 	for {
-		_, message, err := connection.ReadMessage()
+		_, message, err := m.Connection.ReadMessage()
 		if err != nil || err == io.EOF {
 			log.Fatal("Error reading: ", err)
 			return
@@ -72,7 +73,7 @@ func (m Message) ReadMessage(connection *websocket.Conn, done chan struct{}) {
 			_ = json.NewEncoder(reqBodyBytes).Encode(answerMessage)
 
 			messageBytes := reqBodyBytes.Bytes()
-			_ = connection.WriteMessage(websocket.TextMessage, messageBytes)
+			_ = m.Connection.WriteMessage(websocket.TextMessage, messageBytes)
 		} else if response.Method == "trickle" {
 			var trickleResponse TrickleResponse
 
