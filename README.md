@@ -23,7 +23,7 @@ As said before, major components of WebRTC includes several JS APIs:
 </p>
 
 ### What is SFU ?
-SFU stands for Selective Forwarding Unit. Also known in the specifications as SFM (Selective Forwarding Middlebox).
+SFU stands for **Selective Forwarding Unit**. Also known in the specifications as SFM (Selective Forwarding Middlebox).
 At times, the term is used to describe a type of video routing device, while at other times
 it will be used to indicate the support of routing technology and not a specific device.
 
@@ -45,7 +45,9 @@ ION-SFU supports real-time processing on media streamed through the sfu using io
 Ion-avp is an extensible audio/video processing service designed for use with ios-sfu.
 
 ### What is media devices ?
-
+The MediaDevices interface provides access to connected media input devices like cameras
+and microphones, as well as screen sharing. In essence, it lets you obtain access to any 
+hardware source of media data.
 
 ### How does this project work ?
 
