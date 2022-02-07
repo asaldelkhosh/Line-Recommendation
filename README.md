@@ -50,7 +50,7 @@ and microphones, as well as screen sharing. In essence, it lets you obtain acces
 hardware source of media data.
 
 ### What is ICE ?
-ICE stands for Interactive Connectivity Establishment. It is a framework used by
+ICE stands for **Interactive Connectivity Establishment**. It is a framework used by
 WebRTC for connecting two peers, regardless of network topology.
 
 This protocol allows two peers find and establish a connection with one another even
@@ -58,6 +58,14 @@ though they may both be using Network Address Translator to share a global IP ad
 other devices on their respective local networks.
 
 The framework algorithm looks for the lowest-latency path for connecting the two peers.
+
+### What is SDP ?
+The **Session Description Protocol** is a format for describing multimedia communication sessions
+for the purposes of announcement and invitation. Its predominant use is in support of
+streaming media applications, such as voice over IP and video conferencing. 
+
+SDP does not deliver any media streams itself but is used between endpoints for negotiation of network metrics, media types
+and other associated properties. The set of properties and parameters is called a session profile.
 
 ### How does this project work ?
 WebRTC serves multiple purposes; together with the Media Capture and Streams API, they provide
@@ -86,9 +94,6 @@ ION-SFU server on the other hand, gets the data and returns the response to all 
 
 ### Dialer package
 websocket - dialer
-
-### Config package
-SDPSemantics
 
 ### Engine package
 Media engine - vpx - code selector
