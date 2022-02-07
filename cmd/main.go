@@ -58,11 +58,13 @@ type Response struct {
 }
 
 func main() {
+
+	// creating the websocket connection
 	c, err := dialer.MakeConnection()
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
-
+	// closing connection when we are done
 	defer func(c *websocket.Conn) {
 		err := c.Close()
 		if err != nil {
@@ -70,6 +72,7 @@ func main() {
 		}
 	}(c)
 
+	// webrtc configuration
 	config := config2.GetConfigs()
 
 	mediaEngine := webrtc.MediaEngine{}
