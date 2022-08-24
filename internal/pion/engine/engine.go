@@ -2,7 +2,6 @@ package engine
 
 import (
 	"github.com/pion/mediadevices"
-	"github.com/pion/mediadevices/pkg/codec/vpx"
 	"github.com/pion/webrtc/v3"
 )
 
@@ -11,8 +10,8 @@ func GetMediaEngine() (*webrtc.MediaEngine, *mediadevices.CodecSelector) {
 	mediaEngine := webrtc.MediaEngine{}
 
 	// vpx parameters for media engine
-	vpxP, _ := vpx.NewVP8Params()
-	vpxP.BitRate = 500_000
+	vpxP := GetParams()
+
 	// code selector for media engine
 	codecSelector := mediadevices.NewCodecSelector(
 		mediadevices.WithVideoEncoders(&vpxP),

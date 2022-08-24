@@ -2,9 +2,10 @@ package dialer
 
 import (
 	"flag"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/url"
+
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -14,7 +15,6 @@ var (
 // MakeConnection will create a websocket from the following url
 // and will return the connection.
 func MakeConnection() (*websocket.Conn, error) {
-
 	// creating the address with a flag
 	flag.StringVar(&addr, "a", "localhost:7000", "address to use")
 	flag.Parse()

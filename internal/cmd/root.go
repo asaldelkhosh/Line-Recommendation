@@ -1,20 +1,21 @@
 package main
 
 import (
-	"Broadcaster/internal/message"
-	"Broadcaster/internal/pion/dialer"
-	"Broadcaster/internal/pion/engine"
-	"Broadcaster/internal/pion/media"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
+
+	"github.com/amirhnajafiz/broadcaster/internal/message"
+	"github.com/amirhnajafiz/broadcaster/internal/pion/dialer"
+	"github.com/amirhnajafiz/broadcaster/internal/pion/engine"
+	"github.com/amirhnajafiz/broadcaster/internal/pion/media"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	_ "github.com/pion/mediadevices/pkg/driver/camera"
 	_ "github.com/pion/mediadevices/pkg/driver/microphone"
 	"github.com/pion/webrtc/v3"
 	"github.com/sourcegraph/jsonrpc2"
-	"log"
 )
 
 var (

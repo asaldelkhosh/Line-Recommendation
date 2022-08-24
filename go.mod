@@ -1,4 +1,4 @@
-module Broadcaster
+module github.com/amirhnajafiz/broadcaster
 
 go 1.17
 
