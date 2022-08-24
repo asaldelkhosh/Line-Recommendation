@@ -30,7 +30,7 @@ type Handler struct {
 	CodeSelector *mediadevices.CodecSelector
 }
 
-func (h *Handler) Handle(peerConnection *webrtc.PeerConnection) {
+func (h *Handler) Handle(peerConnection *webrtc.PeerConnection) error {
 	// connection id for peer
 	var connectionID uint64
 
@@ -40,7 +40,11 @@ func (h *Handler) Handle(peerConnection *webrtc.PeerConnection) {
 		PeerConnection: peerConnection,
 		ConnectionID:   &connectionID,
 	}
+
 	done := make(chan struct{})
+	defer func() {
+		<-done
+	}()
 
 	// use our message package to create a reader
 	go msg.ReadMessage(done)
@@ -58,7 +62,7 @@ func (h *Handler) Handle(peerConnection *webrtc.PeerConnection) {
 	// Remote Session description
 	err = peerConnection.SetLocalDescription(offer)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Handling OnICECandidate event
@@ -118,5 +122,5 @@ func (h *Handler) Handle(peerConnection *webrtc.PeerConnection) {
 	messageBytes := reqBodyBytes.Bytes()
 	_ = h.Conn.WriteMessage(websocket.TextMessage, messageBytes)
 
-	<-done
+	return nil
 }
