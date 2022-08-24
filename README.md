@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="assets/logo.png" width="300" alt="logo" />
+</p>
+
 <h1 align="center">
 Broadcaster
 </h1>
