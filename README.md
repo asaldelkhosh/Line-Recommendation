@@ -180,5 +180,5 @@ Server is running on port 3030
 
 Now you can check the application on **localhost:3030** to see something like this:
 <p align="center">
-    <img src="demo.png" />
+    <img src="assets/demo.png" />
 </p>
