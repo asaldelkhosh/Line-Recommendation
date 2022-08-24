@@ -5,16 +5,14 @@ import (
 	"github.com/pion/webrtc/v3"
 )
 
-// GetMediaEngine will create and return the media engine and code selector
+// GetMediaEngine will create and return the media-engine and code-selector.
 func GetMediaEngine() (*webrtc.MediaEngine, *mediadevices.CodecSelector) {
+	// webrtc media-engine
 	mediaEngine := webrtc.MediaEngine{}
-
-	// vpx parameters for media engine
-	vpxP := GetParams()
 
 	// code selector for media engine
 	codecSelector := mediadevices.NewCodecSelector(
-		mediadevices.WithVideoEncoders(&vpxP),
+		mediadevices.WithVideoEncoders(getVPXPParams()),
 	)
 	codecSelector.Populate(&mediaEngine)
 

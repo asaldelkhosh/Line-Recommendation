@@ -2,9 +2,16 @@ package engine
 
 import "github.com/pion/mediadevices/pkg/codec/vpx"
 
-func GetParams() vpx.VP8Params {
-	vpxP, _ := vpx.NewVP8Params()
-	vpxP.BitRate = 500_000
+const (
+	// vpx bitrate
+	bitRate = 500_000
+)
 
-	return vpxP
+// getVPXPParams returns a VP8 params with
+// default bitrate.
+func getVPXPParams() *vpx.VP8Params {
+	vpxP, _ := vpx.NewVP8Params()
+	vpxP.BitRate = bitRate
+
+	return &vpxP
 }
