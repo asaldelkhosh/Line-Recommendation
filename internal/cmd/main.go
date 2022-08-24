@@ -1,11 +1,10 @@
 package main
 
 import (
-	config2 "Broadcaster/internal/config"
 	"Broadcaster/internal/message"
-	"Broadcaster/pkg/dialer"
-	"Broadcaster/pkg/engine"
-	"Broadcaster/pkg/media"
+	"Broadcaster/internal/pion/dialer"
+	"Broadcaster/internal/pion/engine"
+	"Broadcaster/internal/pion/media"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -33,13 +32,25 @@ type Candidate struct {
 	Candidate *webrtc.ICECandidate `json:"candidate"`
 }
 
-func main() {
+// GetConfigs will create the webrtc server configurations
+func GetConfigs() webrtc.Configuration {
+	return webrtc.Configuration{
+		ICEServers: []webrtc.ICEServer{
+			{
+				URLs: []string{"stun:stun.l.google.com:19302"},
+			},
+		},
+		SDPSemantics: webrtc.SDPSemanticsUnifiedPlanWithFallback,
+	}
+}
 
+func main() {
 	// creating the websocket connection
 	c, err := dialer.MakeConnection()
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
+
 	// closing connection when we are done
 	defer func(c *websocket.Conn) {
 		err := c.Close()
@@ -49,7 +60,7 @@ func main() {
 	}(c)
 
 	// webrtc configuration
-	config := config2.GetConfigs()
+	config := GetConfigs()
 
 	// media engine and code selector
 	mediaEngine, codecSelector := engine.GetMediaEngine()
