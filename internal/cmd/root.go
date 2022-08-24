@@ -7,9 +7,9 @@ import (
 	"log"
 
 	"github.com/amirhnajafiz/broadcaster/internal/message"
-	"github.com/amirhnajafiz/broadcaster/internal/pion/dialer"
 	"github.com/amirhnajafiz/broadcaster/internal/pion/engine"
 	"github.com/amirhnajafiz/broadcaster/internal/pion/media"
+	"github.com/amirhnajafiz/broadcaster/internal/pion/sfu"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	_ "github.com/pion/mediadevices/pkg/driver/camera"
@@ -47,18 +47,15 @@ func GetConfigs() webrtc.Configuration {
 
 func main() {
 	// creating the websocket connection
-	c, err := dialer.MakeConnection()
+	conn, err := sfu.Connect("localhost:7000")
 	if err != nil {
-		log.Fatal("dial:", err)
+		log.Fatalf("failed to dial ion-sfu server: %v\n", err)
+
+		return
 	}
 
-	// closing connection when we are done
-	defer func(c *websocket.Conn) {
-		err := c.Close()
-		if err != nil {
-			log.Fatal("close fatal:", err)
-		}
-	}(c)
+	// closing connection to our ion-sfu server
+	defer conn.Close()
 
 	// webrtc configuration
 	config := GetConfigs()
@@ -74,7 +71,7 @@ func main() {
 
 	// create a message
 	msg := message.Message{
-		Connection:     c,
+		Connection:     conn,
 		PeerConnection: peerConnection,
 		ConnectionID:   &connectionID,
 	}
@@ -122,7 +119,7 @@ func main() {
 			_ = json.NewEncoder(reqBodyBytes).Encode(m)
 
 			messageBytes := reqBodyBytes.Bytes()
-			_ = c.WriteMessage(websocket.TextMessage, messageBytes)
+			_ = conn.WriteMessage(websocket.TextMessage, messageBytes)
 		}
 	})
 
@@ -154,7 +151,7 @@ func main() {
 	_ = json.NewEncoder(reqBodyBytes).Encode(offerMessage)
 
 	messageBytes := reqBodyBytes.Bytes()
-	_ = c.WriteMessage(websocket.TextMessage, messageBytes)
+	_ = conn.WriteMessage(websocket.TextMessage, messageBytes)
 
 	<-done
 }
