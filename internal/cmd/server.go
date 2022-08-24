@@ -1,4 +1,4 @@
-package serve
+package main
 
 import (
 	"github.com/amirhnajafiz/broadcaster/internal/handler"
@@ -25,20 +25,41 @@ func getPeerDefaultConfigs() webrtc.Configuration {
 	}
 }
 
-func Start(conn *websocket.Conn) {
-	// media engine and code selector
+// server manages to make a webrtc server.
+type server struct {
+	API     *webrtc.API
+	Handler handler.Handler
+}
+
+// New server.
+func New(conn *websocket.Conn) Server {
+	// creating a server
+	s := &server{}
+
+	// creating a media-engine and a code-selector
 	mediaEngine, codecSelector := engine.GetMediaEngine()
 
-	h := handler.Handler{
+	// creating a handler, to handle peer tracks and requests
+	s.Handler = handler.Handler{
 		Conn:         conn,
 		CodeSelector: codecSelector,
 	}
 
-	api := webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
-	peerConnection, err := api.NewPeerConnection(getPeerDefaultConfigs())
+	// webrtc api
+	s.API = webrtc.NewAPI(webrtc.WithMediaEngine(mediaEngine))
+
+	return s
+}
+
+// Accept new peers.
+func (s *server) Accept() error {
+	peerConnection, err := s.API.NewPeerConnection(getPeerDefaultConfigs())
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	h.Handle(peerConnection)
+	// handle peer
+	s.Handler.Handle(peerConnection)
+
+	return nil
 }

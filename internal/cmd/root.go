@@ -3,9 +3,14 @@ package main
 import (
 	"log"
 
-	"github.com/amirhnajafiz/broadcaster/internal/cmd/serve"
 	"github.com/amirhnajafiz/broadcaster/internal/pion/sfu"
 )
+
+// Server
+// manages the peer connections.
+type Server interface {
+	Accept() error
+}
 
 func main() {
 	// creating connection to ion-sfu server
@@ -20,5 +25,10 @@ func main() {
 	defer conn.Close()
 
 	// starting broadcast server
-	serve.Start(conn)
+	s := New(conn)
+
+	// accept peer on server
+	if er := s.Accept(); er != nil {
+		log.Fatalf("failed to accept on broadcast server: %v\n", er)
+	}
 }
