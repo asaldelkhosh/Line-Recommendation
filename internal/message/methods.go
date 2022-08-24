@@ -3,44 +3,40 @@ package message
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/sourcegraph/jsonrpc2"
 )
 
-func (m *Message) onAccept(response Response) {
-	result := *response.Result
-	_ = response.Result
-	if err := m.PeerConnection.SetRemoteDescription(result); err != nil {
-		log.Fatal(err)
+func (m *Message) onAccept(response Response) error {
+	if err := m.PeerConnection.SetRemoteDescription(*response.Result); err != nil {
+		return err
 	}
+
+	return nil
 }
 
-func (m *Message) onOffer(response Response) {
+func (m *Message) onOffer(response Response) error {
 	_ = m.PeerConnection.SetRemoteDescription(*response.Params)
-	answer, err := m.PeerConnection.CreateAnswer(nil)
 
+	answer, err := m.PeerConnection.CreateAnswer(nil)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	_ = m.PeerConnection.SetLocalDescription(answer)
 
-	connectionUUID := uuid.New()
-	*m.ConnectionID = uint64(connectionUUID.ID())
+	*m.ConnectionID = uint64(uuid.New().ID())
 
-	offerJSON, err := json.Marshal(&SendAnswer{
+	offerJSON, _ := json.Marshal(&SendAnswer{
 		Answer: m.PeerConnection.LocalDescription(),
 		SID:    "test room",
 	})
 
-	params := (*json.RawMessage)(&offerJSON)
-
 	answerMessage := jsonrpc2.Request{
 		Method: "answer",
-		Params: params,
+		Params: (*json.RawMessage)(&offerJSON),
 		ID: jsonrpc2.ID{
 			IsString: false,
 			Str:      "",
@@ -49,22 +45,23 @@ func (m *Message) onOffer(response Response) {
 	}
 
 	reqBodyBytes := new(bytes.Buffer)
-	_ = json.NewEncoder(reqBodyBytes).Encode(answerMessage)
+	if er := json.NewEncoder(reqBodyBytes).Encode(answerMessage); er != nil {
+		return er
+	}
 
-	messageBytes := reqBodyBytes.Bytes()
-	_ = m.Connection.WriteMessage(websocket.TextMessage, messageBytes)
+	return m.Connection.WriteMessage(websocket.TextMessage, reqBodyBytes.Bytes())
 }
 
-func (m *Message) onTrickle(message []byte) {
+func (m *Message) onTrickle(message []byte) error {
 	var trickleResponse TrickleResponse
 
 	if err := json.Unmarshal(message, &trickleResponse); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	err := m.PeerConnection.AddICECandidate(*trickleResponse.Params.Candidate)
-
-	if err != nil {
-		log.Fatal(err)
+	if err := m.PeerConnection.AddICECandidate(*trickleResponse.Params.Candidate); err != nil {
+		return err
 	}
+
+	return nil
 }

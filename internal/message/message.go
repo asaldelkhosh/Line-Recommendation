@@ -38,14 +38,17 @@ func (m *Message) ReadMessage(done chan struct{}) {
 
 		// check for response id
 		if response.Id == *m.ConnectionID {
-			// accept
-			m.onAccept(response)
+			handleError(m.onAccept(response)) // accept
 		} else if response.Id != 0 && response.Method == "offer" {
-			// offer
-			m.onOffer(response)
+			handleError(m.onOffer(response)) // offer
 		} else if response.Method == "trickle" {
-			// trickle
-			m.onTrickle(message)
+			handleError(m.onTrickle(message)) // trickle
 		}
+	}
+}
+
+func handleError(err error) {
+	if err != nil {
+		log.Fatalf("failed in message reading: %v\n", err)
 	}
 }
