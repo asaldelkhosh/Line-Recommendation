@@ -32,6 +32,6 @@ require (
 	github.com/pion/udp v0.1.4 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.5.0 // indirect
-	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 )
