@@ -7,7 +7,7 @@ import (
 )
 
 type Handler struct {
-	Repository mysql.MySQL
+	Repository *mysql.MySQL
 }
 
 func (h *Handler) Routes(c *fiber.Ctx) error {
