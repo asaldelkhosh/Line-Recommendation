@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+
 	"github.com/sweetie-pie/line-recommendation/internal/model"
 )
 
@@ -51,5 +52,11 @@ func (m *MySQL) GetNode(id uint) (*model.Node, error) {
 
 // GetSearches of our users.
 func (m *MySQL) GetSearches() ([]*model.Search, error) {
-	return nil, nil
+	list := make([]*model.Search, 0)
+
+	if err := m.conn.Find(&list).Error; err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }
