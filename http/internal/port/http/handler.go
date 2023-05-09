@@ -131,16 +131,14 @@ func (h *Handler) Data(c *fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 
-	searchResponse := make([]RouteResponse, 0)
+	searchResponse := make([]SearchResponse, 0)
 
-	for _, route := range searches {
-		src, _ := h.Repository.GetNode(route.StartID)
-		dest, _ := h.Repository.GetNode(route.StopID)
-
-		searchResponse = append(searchResponse, RouteResponse{
-			ID:    route.ID,
-			Start: *src,
-			Stop:  *dest,
+	for _, node := range searches {
+		searchResponse = append(searchResponse, SearchResponse{
+			X1: node.StartX,
+			X2: node.StopX,
+			Y1: node.StartY,
+			Y2: node.StopY,
 		})
 	}
 
