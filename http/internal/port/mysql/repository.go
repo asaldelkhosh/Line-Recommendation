@@ -39,7 +39,7 @@ func (m *MySQL) GetRoutes() ([]*model.Route, error) {
 func (m *MySQL) GetNodes() ([]uint, error) {
 	list := make([]uint, 0)
 
-	if err := m.conn.Find(list).Select("id").Error; err != nil {
+	if err := m.conn.Table("nodes").Select("id").Find(&list).Error; err != nil {
 		return nil, err
 	}
 
