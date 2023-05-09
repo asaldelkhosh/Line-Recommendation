@@ -2,7 +2,10 @@ package http
 
 import (
 	"log"
+	"math/rand"
+	"strconv"
 
+	"github.com/sweetie-pie/line-recommendation/internal/model"
 	"github.com/sweetie-pie/line-recommendation/internal/port/mysql"
 
 	"github.com/gofiber/fiber/v2"
@@ -20,7 +23,42 @@ type Handler struct {
 }
 
 func (h *Handler) CreateRoute(c *fiber.Ctx) error {
-	return c.Next()
+	tmp := c.Query("count", "4")
+	count, _ := strconv.Atoi(tmp)
+
+	nodes, err := h.Repository.GetNodes()
+	if err != nil {
+		log.Println(err)
+
+		return fiber.ErrInternalServerError
+	}
+
+	for i := 0; i < count; i++ {
+		// index of src and dest nodes
+		srcIndex := rand.Intn(len(nodes))
+		destIndex := srcIndex
+
+		// make sure they are not the same
+		for {
+			destIndex = rand.Intn(len(nodes))
+			if destIndex != srcIndex {
+				break
+			}
+		}
+
+		route := model.Route{
+			StartID: nodes[srcIndex],
+			StopID:  nodes[destIndex],
+		}
+
+		if err := h.Repository.InsertRoute(&route); err != nil {
+			log.Println(err)
+
+			return fiber.ErrInternalServerError
+		}
+	}
+
+	return c.Status(fiber.StatusOK).SendString("Created!")
 }
 
 func (h *Handler) CreateNode(c *fiber.Ctx) error {
