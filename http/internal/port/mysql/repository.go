@@ -25,7 +25,13 @@ func (m *MySQL) InsertSearch(search *model.Search) error {
 
 // GetRoutes of our system.
 func (m *MySQL) GetRoutes() ([]*model.Route, error) {
-	return nil, nil
+	routes := make([]*model.Route, 0)
+
+	if err := m.conn.Find(&routes).Error; err != nil {
+		return nil, err
+	}
+
+	return routes, nil
 }
 
 // GetNode by its id.
