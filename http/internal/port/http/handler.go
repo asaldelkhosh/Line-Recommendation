@@ -15,7 +15,7 @@ const (
 	XUp   = 1000
 	XDown = -1000
 	YUp   = 1000
-	yDown = -1000
+	YDown = -1000
 )
 
 type Handler struct {
@@ -62,7 +62,23 @@ func (h *Handler) CreateRoute(c *fiber.Ctx) error {
 }
 
 func (h *Handler) CreateNode(c *fiber.Ctx) error {
-	return c.Next()
+	tmp := c.Query("count", "4")
+	count, _ := strconv.Atoi(tmp)
+
+	for i := 0; i < count; i++ {
+		node := model.Node{
+			X: int64(rand.Intn(XUp-XDown) + XDown),
+			Y: int64(rand.Intn(YUp-YDown) + YDown),
+		}
+
+		if err := h.Repository.InsertNode(&node); err != nil {
+			log.Println(err)
+
+			return fiber.ErrInternalServerError
+		}
+	}
+
+	return c.Status(fiber.StatusOK).SendString("Created!")
 }
 
 func (h *Handler) Search(c *fiber.Ctx) error {
