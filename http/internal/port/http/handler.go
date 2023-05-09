@@ -8,8 +8,27 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+const (
+	XUp   = 1000
+	XDown = -1000
+	YUp   = 1000
+	yDown = -1000
+)
+
 type Handler struct {
 	Repository *mysql.MySQL
+}
+
+func (h *Handler) CreateRoute(c *fiber.Ctx) error {
+	return c.Next()
+}
+
+func (h *Handler) CreateNode(c *fiber.Ctx) error {
+	return c.Next()
+}
+
+func (h *Handler) Search(c *fiber.Ctx) error {
+	return c.Next()
 }
 
 func (h *Handler) Data(c *fiber.Ctx) error {
