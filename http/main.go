@@ -30,8 +30,7 @@ func main() {
 	// creating a handler
 	h := http.Handler{Repository: db}
 
-	app.Get("/routes", h.Routes)
-	app.Get("/searches", h.Searches)
+	app.Get("/data", h.Data)
 
 	log.Printf("server start on %d ...\n", *httpPort)
 
