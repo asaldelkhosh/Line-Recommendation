@@ -82,7 +82,25 @@ func (h *Handler) CreateNode(c *fiber.Ctx) error {
 }
 
 func (h *Handler) Search(c *fiber.Ctx) error {
-	return c.Next()
+	tmp := c.Query("count", "4")
+	count, _ := strconv.Atoi(tmp)
+
+	for i := 0; i < count; i++ {
+		search := model.Search{
+			StartX: int64(rand.Intn(XUp-XDown) + XDown),
+			StartY: int64(rand.Intn(YUp-YDown) + YDown),
+			StopX:  int64(rand.Intn(XUp-XDown) + XDown),
+			StopY:  int64(rand.Intn(YUp-YDown) + YDown),
+		}
+
+		if err := h.Repository.InsertSearch(&search); err != nil {
+			log.Println(err)
+
+			return fiber.ErrInternalServerError
+		}
+	}
+
+	return c.Status(fiber.StatusOK).SendString("Created!")
 }
 
 func (h *Handler) Data(c *fiber.Ctx) error {

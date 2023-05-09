@@ -2,6 +2,8 @@ package model
 
 type Search struct {
 	Base
-	StartID uint `json:"start"`
-	StopID  uint `json:"stop"`
+	StartX int64 `json:"startX"`
+	StartY int64 `json:"startY"`
+	StopX  int64 `json:"stopX"`
+	StopY  int64 `json:"stopY"`
 }
