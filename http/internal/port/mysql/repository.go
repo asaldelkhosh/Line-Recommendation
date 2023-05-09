@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"github.com/sweetie-pie/line-recommendation/internal/model"
 )
 
@@ -25,6 +26,21 @@ func (m *MySQL) InsertSearch(search *model.Search) error {
 // GetRoutes of our system.
 func (m *MySQL) GetRoutes() ([]*model.Route, error) {
 	return nil, nil
+}
+
+// GetNode by its id.
+func (m *MySQL) GetNode(id uint) (*model.Node, error) {
+	node := new(model.Node)
+
+	if err := m.conn.First(&node, id).Error; err != nil {
+		return nil, err
+	}
+
+	if node.ID != id {
+		return nil, fmt.Errorf("node not found")
+	}
+
+	return node, nil
 }
 
 // GetSearches of our users.
