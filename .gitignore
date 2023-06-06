@@ -19,3 +19,5 @@
 .idea/
 .vscode/
 http/main
+
+__pycache__/
