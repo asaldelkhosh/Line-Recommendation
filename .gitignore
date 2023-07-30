@@ -21,3 +21,6 @@
 http/main
 
 __pycache__/
+
+*.csv
+*.json
