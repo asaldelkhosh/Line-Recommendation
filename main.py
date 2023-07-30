@@ -174,4 +174,4 @@ df_searches['path'] = df_searches['src'].map(str) + '-' + df_searches['dest'].ma
 
 
 # finding searched pathes that has benefit to add
-df_searches.path.value_counts()
+print(df_searches.path.value_counts())
